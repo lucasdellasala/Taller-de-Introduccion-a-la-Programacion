@@ -75,6 +75,13 @@ for(let i = 0; i<frutaOverdura.length; i++){
     console.log(frutaOverdura[i])
 }
 
+//While (Mientras)
 
+let condicionDeInterrupcion = 0
 
-
+while(condicionDeInterrupcion<3){
+    console.log("Condición de interrupción: ", condicionDeInterrupcion)
+    
+    condicionDeInterrupcion++
+    //Bloque de código
+}
