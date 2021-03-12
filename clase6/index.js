@@ -1,80 +1,72 @@
+// PROTOCOLO HTTP
+// http://localhost:3000/
+
+// IMPORTS
 import Express from 'express'
 import morgan from 'morgan'
 import Bd from './bd.js'
 
+// SETTINGS
 const PORT = 3000
-
 const app = Express()
 app.use(morgan('tiny'))
 
-app.get('/', (req, res) => {
-    console.log('Solicitud de todas las personas')
-    res.status(200).send(
-        Bd
-    )
-    //Me tira un 304, ??
+// ENDPOINTS
+app.get('/', (req,res)=>{
+    console.table(Bd)
+    res.send(Bd)
 })
 
-app.get('/:id', (req, res) => {
-    const idSolicitado = parseInt(req.params.id)
+app.get('/:id', (req,res)=>{
+    const idSolicitado = +req.params.id // o parseInt(req.params.id)
 
-    const personaSolicitada = Bd.find(
-        (persona) => persona.id === idSolicitado
-    )
+    const personaSolicitada = Bd.find((persona)=>persona.id===idSolicitado)
 
-    console.log('Solicitud de la persona de id: ' + idSolicitado + '.')
-
-    res.status(200).send(
-        personaSolicitada
-    )
-    //Me tira un 304, ??
+    console.table(Bd)
+    res.status(200).send(personaSolicitada.nombre)
 })
 
-app.post('/add', (req, res) => {
+app.post('/add', (req,res)=>{
+    //req.params => query params
     const id = req.query.id
-    const name = req.query.name
+    const nombre = req.query.nombre
 
     Bd.push({
         "id": parseInt(id),
-        "name": name
+        "nombre": nombre
     })
 
-    console.log('Nuevo registro en base de datos con id: ' + id + ', name: ' + name)
     console.table(Bd)
-
-    res.send('Nuevo registro en base de datos con id: ' + id + ', name: ' + name)
+    res.status(201).send(`La persona ${nombre} ha sido agregada a la base de datos. Con el id ${id}`)
 })
 
-app.delete('/:id', (req, res) => {
-    const idSolicitado = parseInt(req.params.id)
+app.delete('/:id', (req,res)=>{
+    const idSolicitado = +req.params.id // o parseInt(req.params.id)
 
-    const personaDelete = Bd.find((persona) => persona.id === idSolicitado)
-    const indexPersonaDelete = Bd.indexOf(personaDelete)
-    Bd.splice(indexPersonaDelete, 1)
+    const personaSolicitada = Bd.find((persona)=>persona.id === idSolicitado)
+    const indexPersonaSolicitada = Bd.indexOf(personaSolicitada)
+    Bd.splice(indexPersonaSolicitada, 1)
 
-    console.log('Base de datos actualizada. Persona con id: ' + idSolicitado + ' eliminada.')
     console.table(Bd)
-
-    res.send('Base de datos actualizada. Persona con id: ' + idSolicitado + ' eliminada.')
+    res.status(200).send(`La persona ${personaSolicitada.nombre} ha sido eliminada de la base de datos. Con el id ${personaSolicitada.id}`)
 })
 
-app.put('/update/', (req, res) => {
+app.put('/update/', (req,res)=>{
     const idSolicitado = parseInt(req.query.id)
-    const newName = req.query.name
+    const nuevoNombre = req.query.nombre
 
-    const newPerson = {
+    const nuevaPersona = {
         "id": idSolicitado,
-        "name": newName
+        "nombre": nuevoNombre
     }
 
-    const personaUpdate = Bd.find((persona) => persona.id === idSolicitado)
-    const indexPersonUpdate = Bd.indexOf(personaUpdate)
-    Bd.splice(indexPersonUpdate, 1, newPerson)
+    const personaUpdate = Bd.find((persona)=> persona.id === idSolicitado)
+    const indexPersonaUpdate = Bd.indexOf(personaUpdate)
+    Bd.splice(indexPersonaUpdate, 1, nuevaPersona)
 
-    console.log('Registro de la base de datos con id: ' + idSolicitado + ' actualizado.')
     console.table(Bd)
-
-    res.send('Registro de la base de datos con id: ' + idSolicitado + ' actualizado.')
+    res.status(200).send(`Se hizo update de la persona ${personaUpdate.nombre} por ${nuevaPersona.nombre} con id ${nuevaPersona.id}`)
 })
 
-app.listen(PORT, () => console.log('Listen on port ' + PORT))
+// LISTEN
+app.listen(PORT, ()=>console.log('Escuchando el puerto '+ PORT))
