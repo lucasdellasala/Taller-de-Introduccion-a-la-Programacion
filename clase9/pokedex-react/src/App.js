@@ -21,14 +21,14 @@ function App() {
     const createPokemonCard = (pokemon) => {
         const { id, name, sprites, types } = pokemon;
         const type = types[0].type.name;
-        return <div className={'pokemon'}>
+        return <div className={'pokemon grow'}>
             <div className="img-container">
                 <img src={sprites.front_default} alt={name}/>
             </div>
             <div className="info">
                 <span className="number">{id}</span>
                 <h3 className="name">{name}</h3>
-                <small className="type">Type: <span>{type}</span></small>
+                <small className="type"><span>{type}</span></small>
             </div>
         </div>
     }
@@ -40,7 +40,7 @@ function App() {
     return (
         <div className="App">
             <h1>PokeDex</h1>
-            <div id="poke_container" className="poke-container">
+            <div id="poke_container" className="poke_container">
                 {list.map(createPokemonCard)}
             </div>
         </div>
