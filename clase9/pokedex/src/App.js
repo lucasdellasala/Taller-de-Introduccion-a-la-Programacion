@@ -78,7 +78,7 @@ function App() {
   const fetchPokemons =  () => {
     pagesList.map(pokemon=>{
       getPokemon(pokemon.url).then(res =>{
-        setPokemonList(prevPokemons => [...prevPokemons, res])
+        setPokemonList(prevPokemons => [...new Set([...prevPokemons, res])])
       })})
   }
   
