@@ -86,16 +86,6 @@ function App() {
     fetchPage(page,limit)
   }
 
-  const fetchOnePokemon = (id) =>{
-    let pokemon = pokemonList.find(pokemon => pokemon.id === id)
-    if(!pokemon){
-      const url = `https://pokeapi.co/api/v2/pokemon/${id}`
-      getPokemon(url).then(pokemonDetail => setModalPokemon(pokemonDetail))
-    }
-    else {
-      setModalPokemon(pokemon)
-    }
-  }
   const CardList = (props) => {
     let pokemonList = props.info  
     pokemonList = pokemonList.sort((a,b)=> a.id - b.id)
