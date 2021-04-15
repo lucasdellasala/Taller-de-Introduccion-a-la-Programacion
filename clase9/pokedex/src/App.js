@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import PokemonCard from './components/PokemonCard.js';
 import { getPokemon, getPokemonList } from './api/apiCalls.js';
 import SearchBar from './components/SearchBar.js'
+import Modal from 'react-modal';
 
 //DONE:
 /*
@@ -22,6 +23,16 @@ y puede ser también el resto de sus sprites.
 #Además habría que validar pokemonList contra el total de pokemones de la api para que cuando
 lleguemos a la última página desaparezca el botón de More.
 */
+const customStyles = {
+  content : {
+    top                   : '50%',
+    left                  : '50%',
+    right                 : 'auto',
+    bottom                : 'auto',
+    marginRight           : '-50%',
+    transform             : 'translate(-50%, -50%)'
+  }
+};
 function App() {
   const [page, setPage] = useState(1)
   const [modalPokemon, setModalPokemon] = useState({})
@@ -29,7 +40,27 @@ function App() {
   const [pokemonList, setPokemonList] = useState([])
   const [pagesList, setPagesList] = useState([])
   const [newSearch, setNewSearch] = useState('')
+  const [modalIsOpen,setIsOpen] = useState(false);
 
+  async function cardOnClick(id) {
+    const pokemon = pokemonList.find(pokemon => pokemon.id === id)
+    if (!pokemon) {
+      const url = `https://pokeapi.co/api/v2/pokemon/${id}`
+      const pokemonDetail = await getPokemon(url);
+      setModalPokemon(pokemonDetail)
+    } else {
+      setModalPokemon(pokemon)
+    }
+    openModal()
+  }
+
+  function openModal() {
+    setIsOpen(true);
+  }
+
+  function closeModal(){
+    setIsOpen(false);
+  }
   const fetchPage = (page, limit) => {
     getPokemonList(page, limit).then(currentPage => {
       setPagesList(prevPage =>{
@@ -65,15 +96,13 @@ function App() {
       setModalPokemon(pokemon)
     }
   }
-
   const CardList = (props) => {
     let pokemonList = props.info  
     pokemonList = pokemonList.sort((a,b)=> a.id - b.id)
 
     return <>{
-          pokemonList.map(pokemon =><PokemonCard info={pokemon}/>)
-        }</>
-
+      pokemonList.map(pokemon =><PokemonCard pokemon={pokemon} detailed={false} onClick={cardOnClick}/>)
+    }</>
   }
 
   useEffect(() => {
@@ -96,18 +125,31 @@ function App() {
   },[modalPokemon])
 
   useEffect(() =>{
-    fetchOnePokemon(newSearch)
+    const num = parseInt(newSearch)
+    if(isNaN(num)) return;
+    cardOnClick(newSearch)
   },[newSearch])
 
   return (
-    <div className="App">
-      <h1>PokeDex</h1>
-      <SearchBar doSearch={setNewSearch}/>
-      <div id="poke_container" className="poke_container">
-        <CardList info={pokemonList}/>
+      <div className="App">
+        <h1>PokeDex</h1>
+        <SearchBar doSearch={setNewSearch}/>
+        <div id="poke_container" className="poke_container">
+          <CardList info={pokemonList}/>
+        </div>
+        <button class="more grow" onClick={onClickMore}>More</button>
+        <button onClick={openModal}>open modal</button>
+
+        <Modal
+            isOpen={modalIsOpen}
+            onRequestClose={closeModal}
+            style={customStyles}
+            contentLabel="Example Modal"
+        >
+          <PokemonCard pokemon={modalPokemon} detailed={true} />
+          <button onClick={closeModal}>close</button>
+        </Modal>
       </div>
-      <button class="more grow" onClick={onClickMore}>More</button>
-    </div>
   );
 }
 
