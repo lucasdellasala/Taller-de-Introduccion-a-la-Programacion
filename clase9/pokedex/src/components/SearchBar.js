@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-const SearchBar = () => {
+const SearchBar = (props) => {
+    const pepo = props.pepo;
     const [search, setSearch] = useState("")
     const BarStyling = { width: "20rem", background: "#F2F1F9", border: "none", padding: "0.5rem" };
     const handleKeyPress = (e) => {
@@ -12,6 +13,7 @@ const SearchBar = () => {
 
     const updateInput = async (input) => {
         setSearch(input.target.value);
+        pepo(input.target.value);
     }
     return (
         <input

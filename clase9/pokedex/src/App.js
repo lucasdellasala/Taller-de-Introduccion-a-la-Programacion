@@ -24,10 +24,11 @@ lleguemos a la última página desaparezca el botón de More.
 */
 function App() {
   const [page, setPage] = useState(1)
+
   const [limit, setLimit] = useState(20)
   const [pokemonList, setPokemonList] = useState([])
   const [pagesList, setPagesList] = useState([])
-  const [search, setSearch] = useState()
+  const [newSearch, setNewSearch] = useState('')
 
   const fetchPage = (page, limit) => {
     getPokemonList(page, limit).then(currentPage => {
@@ -62,14 +63,20 @@ function App() {
     fetchPokemons()
   },[pagesList])
 
+
+  useEffect(() =>{
+    console.log(newSearch)
+    console.log('hola q tal')
+    alert(`alto value en app ${newSearch}`)
+  },[newSearch])
+
   useEffect(() =>{
     console.log("LOGGER")
     //console.log({pagesList})
     //console.log({pokemonList})
     //console.log("Page: " + page + " and Limit: "+ limit)
-    console.log({search})
     console.log("\n")
-  },[pagesList, pokemonList, page, limit, search])
+  },[pagesList, pokemonList, page, limit])
 
   const CardList = (props) => {
     let pokemonList = props.info  
@@ -84,7 +91,7 @@ function App() {
   return (
     <div className="App">
       <h1>PokeDex</h1>
-      <SearchBar info={search, setSearch}/>
+      <SearchBar pepo={setNewSearch}/>
       <div id="poke_container" className="poke_container">
         <CardList info={pokemonList}/>
       </div>

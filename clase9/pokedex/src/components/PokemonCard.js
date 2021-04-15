@@ -20,7 +20,6 @@ function PokemonCard(props){
         </div>
       </div>
     )
-    return <></>
 }
 
 export default PokemonCard;
