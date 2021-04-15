@@ -1,74 +1,94 @@
 import './App.css';
 import { useEffect, useState } from 'react';
+import PokemonCard from './components/PokemonCard.js';
+import { getPokemon, getPokemonList } from './api/apiCalls.js';
+import SearchBar from './components/SearchBar.js'
 
+//DONE:
+/*
+Ya está mejorado el manejo de los estados para la búsqueda de pokemons y su respectiva 
+paginación (para no matar a la api a llamadas).
+*/
+
+//TODO:
+/*
+#Lo que hay que hacer es agarrar el componente SearchBar y hacer que al poner un número, revise
+en "pokemonList" si ya existe ese pokemon y si no existe le pegue a la api con getPokemon
+(para traer uno solo) y así tener la info del pokemon.
+
+#Con esa info se debería desplegar un detalle o abrir un modal que tenga más info del pokemon
+y puede ser también el resto de sus sprites.
+
+#Además habría que validar pokemonList contra el total de pokemones de la api para que cuando
+lleguemos a la última página desaparezca el botón de More.
+*/
 function App() {
-  const [list, setList] = useState([])
-  const [pokemons_number, setPokemons_number] = useState(0);
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(20)
+  const [pokemonList, setPokemonList] = useState([])
+  const [pagesList, setPagesList] = useState([])
+  const [search, setSearch] = useState()
 
-
-  const fetchPokemons = async () => {
-    const gottaFetchEmAll = []
-
-    for (let i = 1; i <= pokemons_number; i++) {
-      gottaFetchEmAll.push(await getPokemon(i))
-    }
-
-    await setList(gottaFetchEmAll)
+  const fetchPage = (page, limit) => {
+    getPokemonList(page, limit).then(currentPage => {
+      setPagesList(prevPage =>{
+        if (!prevPage){
+          return [...prevPage, currentPage]
+        } else{
+          return currentPage
+        }
+        
+      })
+      setPage(currentPage=> currentPage+1)
+    })
   }
 
-  const getPokemon = async (id) => {
-    const url = 'https://pokeapi.co/api/v2/pokemon/' + id.toString()
-    const res = await fetch(url)
-    return (await res.json())
+  const fetchPokemons =  () => {
+    pagesList.map(pokemon=>{
+      getPokemon(pokemon.url).then(res =>{
+        setPokemonList(prevPokemons => [...prevPokemons, res])
+      })})
+  }
+  
+  const onClickMore = () =>{
+    fetchPage(page,limit)
   }
 
-  useEffect(async () => {
-    await fetchPokemons()
-  }, [pokemons_number])
+  useEffect(() => {
+    fetchPage(page,limit)
+  }, [])
 
-  //LOGEAMOS LA LISTA DE POKES
-  useEffect(async () => {
-    console.log(list)
-  }, [list])
+  useEffect(() =>{
+    fetchPokemons()
+  },[pagesList])
 
-  useEffect(async () => {
-    console.log("Cantidad de pks", pokemons_number)
-  }, [pokemons_number])
+  useEffect(() =>{
+    console.log("LOGGER")
+    //console.log({pagesList})
+    //console.log({pokemonList})
+    //console.log("Page: " + page + " and Limit: "+ limit)
+    console.log({search})
+    console.log("\n")
+  },[pagesList, pokemonList, page, limit, search])
 
-  const createPokemonCard = (pokemon) => {
-    const { name, types, sprites, id } = pokemon
-    const type = types[0].type.name
+  const CardList = (props) => {
+    let pokemonList = props.info  
+    pokemonList = pokemonList.sort((a,b)=> a.id - b.id)
 
-    return (
-      <div className="pokemon grow">
-        <div className="img-container">
-          <img src={sprites.front_default} alt={name} />
-        </div>
-        <div className="info">
-          <span className="number">{id}</span>
-          <h3 className="name">{name}</h3>
-          <small className="type">{type}</small>
-        </div>
-      </div>
-    )
+    return <>{
+          pokemonList.map(pokemon =><PokemonCard info={pokemon}/>)
+        }</>
+
   }
 
   return (
     <div className="App">
       <h1>PokeDex</h1>
-
-      <input 
-        key="random1"
-        type="number"
-        placeholder={"cuantos pokes queres?"}
-        onChange={(e) => setPokemons_number(parseInt(e.target.value))}
-      />
-
+      <SearchBar info={search, setSearch}/>
       <div id="poke_container" className="poke_container">
-        {
-          list.map(pokemon => createPokemonCard(pokemon))
-        }
+        <CardList info={pokemonList}/>
       </div>
+      <button class="more grow" onClick={onClickMore}>More</button>
     </div>
   );
 }
