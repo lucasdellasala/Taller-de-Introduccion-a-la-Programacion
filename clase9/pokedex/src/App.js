@@ -24,7 +24,7 @@ lleguemos a la última página desaparezca el botón de More.
 */
 function App() {
   const [page, setPage] = useState(1)
-
+  const [modalPokemon, setModalPokemon] = useState({})
   const [limit, setLimit] = useState(20)
   const [pokemonList, setPokemonList] = useState([])
   const [pagesList, setPagesList] = useState([])
@@ -55,28 +55,16 @@ function App() {
     fetchPage(page,limit)
   }
 
-  useEffect(() => {
-    fetchPage(page,limit)
-  }, [])
-
-  useEffect(() =>{
-    fetchPokemons()
-  },[pagesList])
-
-
-  useEffect(() =>{
-    console.log(newSearch)
-    console.log('hola q tal')
-    alert(`alto value en app ${newSearch}`)
-  },[newSearch])
-
-  useEffect(() =>{
-    console.log("LOGGER")
-    //console.log({pagesList})
-    //console.log({pokemonList})
-    //console.log("Page: " + page + " and Limit: "+ limit)
-    console.log("\n")
-  },[pagesList, pokemonList, page, limit])
+  const fetchOnePokemon = (id) =>{
+    let pokemon = pokemonList.find(pokemon => pokemon.id === id)
+    if(!pokemon){
+      const url = `https://pokeapi.co/api/v2/pokemon/${id}`
+      getPokemon(url).then(pokemonDetail => setModalPokemon(pokemonDetail))
+    }
+    else {
+      setModalPokemon(pokemon)
+    }
+  }
 
   const CardList = (props) => {
     let pokemonList = props.info  
@@ -88,10 +76,33 @@ function App() {
 
   }
 
+  useEffect(() => {
+    fetchPage(page,limit)
+  }, [])
+
+  useEffect(() =>{
+    fetchPokemons()
+  },[pagesList])
+
+  useEffect(() =>{
+    console.log("LOGGER")
+    //console.log({pagesList})
+    //console.log({pokemonList})
+    //console.log("Page: " + page + " and Limit: "+ limit)
+    console.log(modalPokemon.name)
+    console.log(modalPokemon.id)
+    console.log({modalPokemon})
+    console.log("\n")
+  },[modalPokemon])
+
+  useEffect(() =>{
+    fetchOnePokemon(newSearch)
+  },[newSearch])
+
   return (
     <div className="App">
       <h1>PokeDex</h1>
-      <SearchBar pepo={setNewSearch}/>
+      <SearchBar doSearch={setNewSearch}/>
       <div id="poke_container" className="poke_container">
         <CardList info={pokemonList}/>
       </div>

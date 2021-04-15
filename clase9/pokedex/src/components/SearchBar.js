@@ -1,19 +1,17 @@
 import { useState } from 'react';
 
 const SearchBar = (props) => {
-    const pepo = props.pepo;
+    const doSearch = props.doSearch;
     const [search, setSearch] = useState("")
     const BarStyling = { width: "20rem", background: "#F2F1F9", border: "none", padding: "0.5rem" };
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
-            console.log({ e })
-            console.log({ search })
+            doSearch(search)
         }
     }
 
     const updateInput = async (input) => {
         setSearch(input.target.value);
-        pepo(input.target.value);
     }
     return (
         <input
