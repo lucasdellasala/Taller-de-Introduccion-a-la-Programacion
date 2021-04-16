@@ -1,40 +1,41 @@
 import './App.css';
 import { useEffect, useState } from 'react';
+import { getPokemon, getPokemonList } from './api/apiCalls.js'
 
 function App() {
-  const [list, setList] = useState([])
-  const [pokemons_number, setPokemons_number] = useState(0);
+  // ESTADOS
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(20)
+  const [pagesList, setPagesList] = useState([])
+  const [pokemonList, setPokemonList] = useState([])
 
+  // FUNCIONES
+  const fetchPage = async (page, limit) => {
+    getPokemonList(page, limit).then(currentPage =>{
+      setPagesList(prevPage =>{
+        if(!prevPage){
+          return [...prevPage, currentPage]
+        } else {
+          return currentPage
+        }
+      })
+      setPage(currentPage => currentPage + 1)
+    })
+  }
 
   const fetchPokemons = async () => {
-    const gottaFetchEmAll = []
-
-    for (let i = 1; i <= pokemons_number; i++) {
-      gottaFetchEmAll.push(await getPokemon(i))
-    }
-
-    await setList(gottaFetchEmAll)
+    pagesList.map((pokemon)=>{
+      getPokemon(pokemon.url).then((res) =>{
+        setPokemonList(prevPokemons => [...prevPokemons, res])
+      })
+    })
   }
 
-  const getPokemon = async (id) => {
-    const url = 'https://pokeapi.co/api/v2/pokemon/' + id.toString()
-    const res = await fetch(url)
-    return (await res.json())
+  const onClickMore = () => {
+    fetchPage(page, limit)
   }
 
-  useEffect(async () => {
-    await fetchPokemons()
-  }, [pokemons_number])
-
-  //LOGEAMOS LA LISTA DE POKES
-  useEffect(async () => {
-    console.log(list)
-  }, [list])
-
-  useEffect(async () => {
-    console.log("Cantidad de pks", pokemons_number)
-  }, [pokemons_number])
-
+  // COMPONENTES
   const createPokemonCard = (pokemon) => {
     const { name, types, sprites, id } = pokemon
     const type = types[0].type.name
@@ -53,22 +54,29 @@ function App() {
     )
   }
 
+  // USE EFFECTS
+  useEffect(()=>{
+    fetchPage(page,limit)
+  }, [])
+
+  useEffect(()=>{
+    fetchPokemons()
+  }, [pagesList])
+
+  //LOGEAMOS LA LISTA DE POKES
+  useEffect(async () => {
+    console.log(pokemonList)
+  }, [pokemonList])
+
   return (
     <div className="App">
       <h1>PokeDex</h1>
-
-      <input 
-        key="random1"
-        type="number"
-        placeholder={"cuantos pokes queres?"}
-        onChange={(e) => setPokemons_number(parseInt(e.target.value))}
-      />
-
       <div id="poke_container" className="poke_container">
         {
-          list.map(pokemon => createPokemonCard(pokemon))
+          pokemonList.map(pokemon => createPokemonCard(pokemon))
         }
       </div>
+      <button className="more grow" onClick={onClickMore}>More</button>
     </div>
   );
 }
