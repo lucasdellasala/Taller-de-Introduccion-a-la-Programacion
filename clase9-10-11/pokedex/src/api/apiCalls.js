@@ -16,3 +16,11 @@ export const getPokemonList = async (page, limit) => {
     )
     return pageData
 }
+
+export const getTrainers = async () => {
+    const trainers = await (
+        await fetch('http://localhost:7000')
+                .then(res => res.json())
+    )
+    return trainers;
+}
