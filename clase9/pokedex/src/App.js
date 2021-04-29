@@ -6,6 +6,7 @@ import {
     Link
 } from 'react-router-dom'
 import Pokedex from "./components/Pokedex";
+import Entrenadores from "./components/Entrenadores";
 
 
 export default function App () {
@@ -29,7 +30,7 @@ export default function App () {
                     <Pokedex />
                 </Route>
                 <Route path="/entrenadores">
-                    <Pokedex />
+                    <Entrenadores />
                 </Route>
             </Switch>
         </Router>

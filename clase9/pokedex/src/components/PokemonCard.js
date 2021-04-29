@@ -1,19 +1,36 @@
 import React from 'react'
 
 function PokemonCard(props){
-    const { pokemon, detailed, onClick } = props;
+    const { pokemon, entrenador, detailed, onClick } = props;
 
-    if (!pokemon){
+    if (!pokemon && !entrenador){
         return <div></div>
     }
-    const { name, types, sprites, id, height, weight, base_experience } = pokemon
-    const type = types[0].type.name
-    const details = detailed? [
-            <small className="type">height: {height}</small>,
-            <small className="type">weight: {weight}</small>,
-            <small className="type">base experience: {base_experience}</small>,
-        ]
-        : null
+
+
+    let id, name, type, img, details;
+    if(pokemon) {
+        name = pokemon.name;
+        id = pokemon.id;
+        type = pokemon.types[0].type.name
+        img = pokemon.sprites.front_default
+
+        if(detailed){
+            const { height, weight, base_experience } = pokemon
+            details =[
+                <small className="type">height: {height}</small>,
+                <small className="type">weight: {weight}</small>,
+                <small className="type">base experience: {base_experience}</small>,
+            ];
+        }
+    } else {
+        name = entrenador.nombre;
+        id = entrenador.id;
+        type= entrenador.type.nombre;
+        img = entrenador.url;
+    }
+
+
     const onClickLocal = () => {
         if(!onClick) return;
         onClick(id)
@@ -21,7 +38,7 @@ function PokemonCard(props){
     return (
       <div className="pokemon grow" onClick={onClickLocal}>
         <div className="img-container">
-          <img src={sprites.front_default} alt={name} />
+          <img src={img} alt={name} />
         </div>
         <div className="info">
           <span className="number">{id}</span>
