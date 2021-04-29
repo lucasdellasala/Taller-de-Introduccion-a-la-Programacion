@@ -126,3 +126,38 @@ h1{
 
 .grow { transition: all .2s ease-in-out; }
 .grow:hover { transform: scale(1.1); }
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Add a black background color to the top navigation */
+.topnav {
+    background: #ffc600;
+    background: linear-gradient(to right, #D4D3DD, #FFC600);
+    overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+.topnav li {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+/* Change the color of links on hover */
+.topnav li:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+/* Add a color to the active/current link */
+.topnav li.active {
+    background-color: #04AA6D;
+    color: white;
+}

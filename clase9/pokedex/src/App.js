@@ -14,15 +14,12 @@ export default function App () {
         <Router>
             <div>
                 <nav>
-                    <ul>
+                    <ul className="topnav">
                         <li>
                             <Link to="/">Pokedex</Link>
                         </li>
                         <li>
                             <Link to="/entrenadores">Pokentrenadores</Link>
-                        </li>
-                        <li>
-                            <Link to="/users">Lukitas</Link>
                         </li>
                     </ul>
                 </nav>
